@@ -35,14 +35,33 @@ def load_sessions_meta():
 
 def find_jsonl(session_key):
     """Find the .jsonl file for a given session key. Returns Path or None."""
+    # Load sessions.json to map key -> sessionFile
+    meta = load_sessions_meta()
+    if session_key in meta:
+        entry = meta[session_key]
+        sf = entry.get("sessionFile", "")
+        if sf and os.path.exists(sf):
+            return Path(sf)
+    # Try direct filename match
     cand = SESSIONS_DIR / f"{session_key}.jsonl"
     if cand.exists():
         return cand
-    # Try fuzzy match
-    for f in SESSIONS_DIR.glob("*.jsonl"):
+    # Try fuzzy UUID match (most recent first)
+    for f in sorted(SESSIONS_DIR.glob("*.jsonl"), key=os.path.getmtime, reverse=True):
+        if ".trajectory" in f.name or ".lock" in f.name:
+            continue
         if session_key in f.stem:
             return f
     return None
+
+
+def _unwrap_msg(raw):
+    """Normalize message: handle nested {message:{role,content}} format."""
+    # OpenClaw stores messages as {"type":"message","message":{...},"timestamp":...}
+    inner = raw.get("message", raw)
+    if "role" not in inner:
+        inner = raw
+    return inner
 
 
 def parse_messages(jsonl_path, last=None, after=None, before=None):
@@ -54,16 +73,20 @@ def parse_messages(jsonl_path, last=None, after=None, before=None):
             if not line:
                 continue
             try:
-                msg = json.loads(line)
+                raw = json.loads(line)
             except json.JSONDecodeError:
                 continue
-            # Extract timestamp
-            ts = msg.get("timestamp") or msg.get("createdAt") or msg.get("ts")
+            # Only keep message-type entries
+            if raw.get("type") != "message":
+                continue
+            msg = _unwrap_msg(raw)
+            # Extract timestamp from outer or inner
+            ts = raw.get("timestamp") or msg.get("timestamp") or msg.get("createdAt")
             if ts:
                 if isinstance(ts, (int, float)):
                     dt = datetime.fromtimestamp(ts / 1000 if ts > 1e12 else ts, tz=timezone.utc)
                 else:
-                    dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                    dt = datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
                 if after and dt < after:
                     continue
                 if before and dt > before:
@@ -79,12 +102,12 @@ def parse_messages(jsonl_path, last=None, after=None, before=None):
 
 def role_label(msg):
     """Map raw role/author to human label."""
-    role = msg.get("role", "").lower()
-    author = msg.get("author", "").lower()
+    role = (msg.get("role", "") or "").lower()
+    author = (msg.get("author", "") or "").lower()
     if role == "user" or author in ("user", "human"):
         return "🧑 User"
     if role == "assistant" or author in ("assistant", "ai", "bot"):
-        return "🤖 Assistant"
+        return "🦞 Assistant"
     if role == "system" or author == "system":
         return "⚙️ System"
     if role == "tool" or author == "tool":
@@ -96,7 +119,6 @@ def clean_content(msg):
     """Extract clean text content, stripping tool-call blocks."""
     content = msg.get("content", "")
     if isinstance(content, list):
-        # Multimodal content blocks
         parts = []
         for block in content:
             if isinstance(block, dict):
@@ -107,9 +129,8 @@ def clean_content(msg):
         content = "\n".join(parts)
     if not isinstance(content, str):
         content = str(content)
-    # Strip large tool-call XML blocks
     import re
-    content = re.sub(r"<tool_calls>.*?</tool_calls>", "[tool calls omitted]", content, flags=re.DOTALL)
+    content = re.sub(r"<tool_calls>.*?</tool_calls>", "[tool calls]", content, flags=re.DOTALL)
     return content.strip()
 
 
