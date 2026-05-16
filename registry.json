@@ -154,6 +154,15 @@
       "version": "1.0.0",
       "author": "OpenClaw Community",
       "description": "Automated vulnerability discovery engine \u2014 code patterns, dependency CVEs, web vulns, network scanning with CVE/CNVD report generation"
+    },
+    "bounty-hunter": {
+      "name": "bounty-hunter",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/bounty-hunter",
+      "category": "security",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Automated bug bounty pipeline \u2014 scan\u2192report\u2192submit (360/CNVD/CVE/H1)\u2192track rewards"
     }
   }
 }
