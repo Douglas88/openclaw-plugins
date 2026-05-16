@@ -118,6 +118,33 @@
       "version": "1.0.0",
       "author": "OpenClaw Community",
       "description": "Multi-modal understanding \u2014 image analysis, PDF reading, audio transcription"
+    },
+    "manus-agent": {
+      "name": "manus-agent",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/manus-agent",
+      "category": "agent",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Manus-style fully autonomous agent \u2014 web browsing, computer use, research, complex task execution"
+    },
+    "deep-research": {
+      "name": "deep-research",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/deep-research",
+      "category": "research",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Autonomous web research agent \u2014 multi-source search, cross-reference, structured reporting"
+    },
+    "data-pipeline": {
+      "name": "data-pipeline",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/data-pipeline",
+      "category": "data",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "ETL pipeline \u2014 extract, transform, analyze, visualize, generate reports"
     }
   }
 }
