@@ -100,6 +100,24 @@
       "version": "1.0.0",
       "author": "OpenClaw Community",
       "description": "Claude Code-style interactive development \u2014 project analysis, PR review, plan mode, pair programming"
+    },
+    "reasoning-engine": {
+      "name": "reasoning-engine",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/reasoning-engine",
+      "category": "intelligence",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "GPT-5 class reasoning \u2014 chain-of-thought with decompose\u2192analyze\u2192verify\u2192conclude"
+    },
+    "multimodal-bridge": {
+      "name": "multimodal-bridge",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/multimodal-bridge",
+      "category": "multimodal",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Multi-modal understanding \u2014 image analysis, PDF reading, audio transcription"
     }
   }
 }
