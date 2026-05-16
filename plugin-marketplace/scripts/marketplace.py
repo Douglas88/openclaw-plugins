@@ -22,11 +22,11 @@ import sys
 import urllib.request
 import urllib.error
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 REGISTRY_PATH = Path.home() / ".openclaw" / "plugin-registry.json"
 SKILLS_DIR = Path.home() / ".openclaw" / "plugin-skills"
-REMOTE_REGISTRY_URL = "https://Douglas88.github.io/openclaw-plugins/registry.json"
+REMOTE_REGISTRY_URL = "https://douglas88.github.io/openclaw-plugins/registry.json"
 
 SEED_PLUGINS = [
     {"name": "mcp-bridge", "repo": "https://github.com/openclaw/openclaw", "subpath": "skills/mcp-bridge",
@@ -70,7 +70,7 @@ def load_registry() -> dict:
 
 
 def save_registry(registry: dict):
-    registry["updated"] = datetime.now(datetime.UTC).isoformat() + "Z"
+    registry["updated"] = datetime.now(timezone.utc).isoformat() + "Z"
     REGISTRY_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(REGISTRY_PATH, "w") as f:
         json.dump(registry, f, indent=2)
