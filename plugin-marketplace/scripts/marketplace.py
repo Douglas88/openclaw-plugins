@@ -26,7 +26,7 @@ from datetime import datetime
 
 REGISTRY_PATH = Path.home() / ".openclaw" / "plugin-registry.json"
 SKILLS_DIR = Path.home() / ".openclaw" / "plugin-skills"
-REMOTE_REGISTRY_URL = "https://kscbxxLiuXP.github.io/openclaw-plugins/registry.json"
+REMOTE_REGISTRY_URL = "https://Douglas88.github.io/openclaw-plugins/registry.json"
 
 SEED_PLUGINS = [
     {"name": "mcp-bridge", "repo": "https://github.com/openclaw/openclaw", "subpath": "skills/mcp-bridge",
