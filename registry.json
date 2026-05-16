@@ -9,7 +9,7 @@
       "category": "integration",
       "version": "1.0.0",
       "author": "OpenClaw Community",
-      "description": "MCP protocol bridge — JSON-RPC 2.0 client + server manager for external tool integration (Filesystem, Playwright, Context7, SQLite, LSP)"
+      "description": "MCP protocol bridge \u2014 JSON-RPC 2.0 client + server manager for external tool integration (Filesystem, Playwright, Context7, SQLite, LSP)"
     },
     "code-review": {
       "name": "code-review",
@@ -63,7 +63,7 @@
       "category": "ide",
       "version": "1.0.0",
       "author": "OpenClaw Community",
-      "description": "Soft-IDE — code panel with file tree exploration, LSP intelligence bridge, and quick-action shortcuts for review/test/docs"
+      "description": "Soft-IDE \u2014 code panel with file tree exploration, LSP intelligence bridge, and quick-action shortcuts for review/test/docs"
     },
     "lsp": {
       "name": "lsp",
@@ -72,7 +72,16 @@
       "category": "intelligence",
       "version": "1.0.0",
       "author": "OpenClaw Community",
-      "description": "LSP MCP Server — zero-dependency Python AST-based code intelligence (go-to-definition, references, hover, diagnostics, symbols, completion)"
+      "description": "LSP MCP Server \u2014 zero-dependency Python AST-based code intelligence (go-to-definition, references, hover, diagnostics, symbols, completion)"
+    },
+    "desktop-automation": {
+      "name": "desktop-automation",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/desktop-automation",
+      "category": "desktop",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Cross-platform GUI automation \u2014 mouse/keyboard/window/screenshot/clipboard control on macOS, Windows, and Ubuntu"
     }
   }
 }
