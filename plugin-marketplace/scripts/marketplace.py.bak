@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+"""
+OpenClaw Plugin Marketplace - Git-based decentralized plugin registry.
+
+No external dependencies. Uses only stdlib.
+"""
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+REGISTRY = Path.home() / ".openclaw" / "plugin-registry.json"
+SKILLS_DIR = Path.home() / ".openclaw" / "plugin-skills"
+
+SEED_PLUGINS = [
+    {"name": "mcp-bridge", "repo": "", "category": "integration",
+     "description": "MCP server bridge for external tool integration"},
+    {"name": "code-review", "repo": "", "category": "code-quality",
+     "description": "Automated code review with linting and best-practice checks"},
+    {"name": "test-generator", "repo": "", "category": "testing",
+     "description": "Generate unit, integration, and e2e tests from source code"},
+    {"name": "doc-generator", "repo": "", "category": "documentation",
+     "description": "Auto-generate API docs, READMEs, and inline documentation"},
+    {"name": "session-tools", "repo": "", "category": "utilities",
+     "description": "Session management, history search, and context tools"},
+    {"name": "plugin-marketplace", "repo": "", "category": "system",
+     "description": "Plugin discovery, install, publish, and update manager"},
+    {"name": "lsp", "repo": "", "category": "intelligence",
+     "description": "Language Server Protocol integration via mcp-bridge for code intelligence"},
+]
+
+
+def _load():
+    if REGISTRY.exists():
+        return json.loads(REGISTRY.read_text())
+    return {}
+
+
+def _save(data):
+    REGISTRY.parent.mkdir(parents=True, exist_ok=True)
+    REGISTRY.write_text(json.dumps(data, indent=2) + "\n")
+
+
+def _ensure_seeded():
+    reg = _load()
+    if not reg:
+        reg = {}
+        for p in SEED_PLUGINS:
+            reg[p["name"]] = p
+        _save(reg)
+    return reg
+
+
+def cmd_list(args):
+    reg = _ensure_seeded()
+    for name, info in sorted(reg.items()):
+        installed = "✓" if (SKILLS_DIR / name).exists() else " "
+        print(f" [{installed}] {name:22s} {info['category']:16s} {info['description']}")
+
+
+def cmd_search(args):
+    reg = _ensure_seeded()
+    q = args.keyword.lower()
+    for name, info in reg.items():
+        if q in name.lower() or q in info.get("description", "").lower() or q in info.get("category", "").lower():
+            installed = "✓" if (SKILLS_DIR / name).exists() else " "
+            print(f" [{installed}] {name:22s} {info['category']:16s} {info['description']}")
+
+
+def cmd_info(args):
+    reg = _ensure_seeded()
+    info = reg.get(args.name)
+    if not info:
+        print(f"Plugin '{args.name}' not found in registry.", file=sys.stderr)
+        sys.exit(1)
+    installed = (SKILLS_DIR / args.name).exists()
+    print(f"Name:        {info['name']}")
+    print(f"Category:    {info.get('category', 'N/A')}")
+    print(f"Description: {info.get('description', 'N/A')}")
+    print(f"Repo:        {info.get('repo') or '(local only)'}")
+    print(f"Installed:   {'yes' if installed else 'no'}")
+
+
+def cmd_install(args):
+    reg = _ensure_seeded()
+    info = reg.get(args.name)
+    if not info:
+        print(f"Plugin '{args.name}' not found in registry.", file=sys.stderr)
+        sys.exit(1)
+    dest = SKILLS_DIR / args.name
+    if dest.exists():
+        print(f"Already installed at {dest}. Use 'update' to refresh.")
+        return
+    repo = info.get("repo")
+    if not repo:
+        print(f"No repo URL configured for '{args.name}'. Creating placeholder.")
+        dest.mkdir(parents=True, exist_ok=True)
+        (dest / "SKILL.md").write_text(f"# {info['name']}\n\n{info.get('description', '')}\n")
+        return
+    print(f"Cloning {repo} -> {dest}")
+    subprocess.run(["git", "clone", repo, str(dest)], check=True)
+    print(f"Installed {args.name}")
+
+
+def cmd_publish(args):
+    reg = _ensure_seeded()
+    name = args.name
+    cat = args.category or "uncategorized"
+    desc = args.description or ""
+    repo = args.repo or ""
+    if name in reg:
+        reg[name].update({"repo": repo, "category": cat, "description": desc or reg[name]["description"]})
+        print(f"Updated {name}")
+    else:
+        reg[name] = {"name": name, "repo": repo, "category": cat, "description": desc}
+        print(f"Published {name}")
+    _save(reg)
+
+
+def cmd_update(args):
+    reg = _ensure_seeded()
+    for name in reg:
+        dest = SKILLS_DIR / name
+        if dest.exists() and (dest / ".git").exists():
+            print(f"Updating {name}...")
+            subprocess.run(["git", "-C", str(dest), "pull"], check=False)
+        elif dest.exists():
+            print(f"Skipping {name} (not a git repo)")
+    print("Update complete.")
+
+
+def cmd_remove(args):
+    reg = _ensure_seeded()
+    dest = SKILLS_DIR / args.name
+    if dest.exists():
+        subprocess.run(["rm", "-rf", str(dest)], check=True)
+        print(f"Removed plugin directory: {dest}")
+    else:
+        print(f"Not installed: {args.name}")
+    if args.name in reg:
+        del reg[args.name]
+        _save(reg)
+        print(f"Removed from registry: {args.name}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="OpenClaw Plugin Marketplace")
+    sub = parser.add_subparsers(dest="command")
+
+    sub.add_parser("list", help="List all registered plugins")
+
+    sp = sub.add_parser("search", help="Search plugins by keyword")
+    sp.add_argument("keyword", help="Search term")
+
+    sp = sub.add_parser("info", help="Show plugin details")
+    sp.add_argument("name", help="Plugin name")
+
+    sp = sub.add_parser("install", help="Install a plugin from its repo")
+    sp.add_argument("name", help="Plugin name")
+
+    sp = sub.add_parser("publish", help="Add or update a plugin in local registry")
+    sp.add_argument("name", help="Plugin name")
+    sp.add_argument("--category", "-c", help="Category tag")
+    sp.add_argument("--description", "-d", help="Short description")
+    sp.add_argument("--repo", "-r", help="Git repository URL")
+
+    sub.add_parser("update", help="Update all installed plugins (git pull)")
+
+    sp = sub.add_parser("remove", help="Remove a plugin from disk and registry")
+    sp.add_argument("name", help="Plugin name")
+
+    args = parser.parse_args()
+    if args.command is None:
+        parser.print_help()
+        sys.exit(1)
+
+    globals()[f"cmd_{args.command.replace('-', '_')}"](args)
+
+
+if __name__ == "__main__":
+    main()

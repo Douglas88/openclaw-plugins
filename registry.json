@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "updated": "2026-05-16T04:10:00Z",
+  "plugins": {
+    "mcp-bridge": {
+      "name": "mcp-bridge",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/mcp-bridge",
+      "category": "integration",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "MCP protocol bridge — JSON-RPC 2.0 client + server manager for external tool integration (Filesystem, Playwright, Context7, SQLite, LSP)"
+    },
+    "code-review": {
+      "name": "code-review",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/code-review",
+      "category": "code-quality",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Automated code review with 6-stage security/performance/quality scan and anti-pattern detection"
+    },
+    "test-generator": {
+      "name": "test-generator",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/test-generator",
+      "category": "testing",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Generate pytest/Jest/Go unit tests with fixtures, mocks, parametrize, and coverage reports"
+    },
+    "doc-generator": {
+      "name": "doc-generator",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/doc-generator",
+      "category": "documentation",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Auto-generate API docs, READMEs, docstrings (Python/TSDoc/JSDoc), and Mermaid architecture diagrams"
+    },
+    "session-tools": {
+      "name": "session-tools",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/session-tools",
+      "category": "utilities",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Session export (md/txt/summary), history search, conversation analysis, and context viewing"
+    },
+    "plugin-marketplace": {
+      "name": "plugin-marketplace",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/plugin-marketplace",
+      "category": "system",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Git-based decentralized plugin discovery, install, publish, and update manager with remote registry support"
+    },
+    "ide-panel": {
+      "name": "ide-panel",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/ide-panel",
+      "category": "ide",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Soft-IDE — code panel with file tree exploration, LSP intelligence bridge, and quick-action shortcuts for review/test/docs"
+    },
+    "lsp": {
+      "name": "lsp",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/mcp-bridge/scripts/lsp_mcp_server.py",
+      "category": "intelligence",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "LSP MCP Server — zero-dependency Python AST-based code intelligence (go-to-definition, references, hover, diagnostics, symbols, completion)"
+    }
+  }
+}
