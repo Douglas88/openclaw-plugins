@@ -145,6 +145,15 @@
       "version": "1.0.0",
       "author": "OpenClaw Community",
       "description": "ETL pipeline \u2014 extract, transform, analyze, visualize, generate reports"
+    },
+    "security-scanner": {
+      "name": "security-scanner",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/security-scanner",
+      "category": "security",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Automated vulnerability discovery engine \u2014 code patterns, dependency CVEs, web vulns, network scanning with CVE/CNVD report generation"
     }
   }
 }
