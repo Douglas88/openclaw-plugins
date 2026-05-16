@@ -174,17 +174,21 @@ def cmd_install(args):
 
     print(f"Installing {args.name} from {repo}...")
     if subpath:
-        # Clone repo to temp, then copy subpath
+        # Clone repo to temp, then copy subpath (file or directory)
         import tempfile, shutil
         tmpdir = Path(tempfile.mkdtemp())
         try:
             subprocess.run(["git", "clone", "--depth", "1", repo, str(tmpdir)], check=True)
             src = tmpdir / subpath
-            if src.exists():
+            if src.is_dir():
                 shutil.copytree(src, dest)
-                print(f"✅ Installed {args.name} v{p.get('version','?')}")
+            elif src.is_file():
+                dest.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dest / src.name)
             else:
                 print(f"❌ Subpath '{subpath}' not found in repo")
+                return
+            print(f"✅ Installed {args.name} v{p.get('version','?')}")
         finally:
             shutil.rmtree(tmpdir, ignore_errors=True)
     else:
