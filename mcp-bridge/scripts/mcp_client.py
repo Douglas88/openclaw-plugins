@@ -195,54 +195,55 @@ def create_client(server_config: dict):
         return MCPStdioClient(command, args, env)
 
 
+def _dispatch_action(client, args):
+    """Route action to the appropriate client method."""
+    action_map = {
+        "ping": lambda: client.ping(),
+        "list_tools": lambda: client.list_tools(),
+        "list_resources": lambda: client.list_resources(),
+    }
+    if args.action in action_map:
+        return action_map[args.action]()
+    if args.action == "call_tool":
+        if not args.tool:
+            raise ValueError("--tool is required for call_tool")
+        return client.call_tool(args.tool, json.loads(args.args))
+    if args.action == "read_resource":
+        if not args.uri:
+            raise ValueError("--uri is required for read_resource")
+        return client.read_resource(args.uri)
+    return {"error": f"Unknown action: {args.action}"}
+
+
+def _handle_list_servers(config_path):
+    path = os.path.expanduser(config_path)
+    if not os.path.exists(path):
+        return {}
+    with open(path) as f:
+        return json.load(f).get("servers", {})
+
+
 def main():
     parser = argparse.ArgumentParser(description="OpenClaw MCP Bridge Client")
-    parser.add_argument("--action", required=True, 
+    parser.add_argument("--action", required=True,
                        choices=["list_tools", "call_tool", "list_resources", "read_resource", "ping", "list_servers"],
                        help="Action to perform")
     parser.add_argument("--server", required=True, help="MCP server name")
     parser.add_argument("--tool", help="Tool name (for call_tool)")
     parser.add_argument("--uri", help="Resource URI (for read_resource)")
     parser.add_argument("--args", default="{}", help="JSON arguments (for call_tool)")
-    parser.add_argument("--config", default="~/.openclaw/mcp_servers.json", 
+    parser.add_argument("--config", default="~/.openclaw/mcp_servers.json",
                        help="Path to MCP server config")
 
     args = parser.parse_args()
 
     if args.action == "list_servers":
-        config_path = os.path.expanduser(args.config)
-        if os.path.exists(config_path):
-            with open(config_path) as f:
-                config = json.load(f)
-            print(json.dumps(config.get("servers", {}), indent=2))
-        else:
-            print(json.dumps({}))
+        print(json.dumps(_handle_list_servers(args.config), indent=2))
         return
 
-    server_config = load_server_config(args.server)
-    client = create_client(server_config)
-
     try:
-        if args.action == "ping":
-            result = client.ping()
-        elif args.action == "list_tools":
-            result = client.list_tools()
-        elif args.action == "call_tool":
-            if not args.tool:
-                print(json.dumps({"error": "--tool is required for call_tool"}))
-                sys.exit(1)
-            tool_args = json.loads(args.args)
-            result = client.call_tool(args.tool, tool_args)
-        elif args.action == "list_resources":
-            result = client.list_resources()
-        elif args.action == "read_resource":
-            if not args.uri:
-                print(json.dumps({"error": "--uri is required for read_resource"}))
-                sys.exit(1)
-            result = client.read_resource(args.uri)
-        else:
-            result = {"error": f"Unknown action: {args.action}"}
-
+        client = create_client(load_server_config(args.server))
+        result = _dispatch_action(client, args)
         print(json.dumps(result, indent=2))
     except Exception as e:
         print(json.dumps({"error": str(e)}))
