@@ -82,6 +82,24 @@
       "version": "1.0.0",
       "author": "OpenClaw Community",
       "description": "Cross-platform GUI automation \u2014 mouse/keyboard/window/screenshot/clipboard control on macOS, Windows, and Ubuntu"
+    },
+    "codex-mode": {
+      "name": "codex-mode",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/codex-mode",
+      "category": "coding",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Autonomous coding loop \u2014 plan\u2192implement\u2192test\u2192fix\u2192repeat (Codex-style self-healing)"
+    },
+    "claude-mode": {
+      "name": "claude-mode",
+      "repo": "https://github.com/openclaw/openclaw",
+      "subpath": "skills/claude-mode",
+      "category": "coding",
+      "version": "1.0.0",
+      "author": "OpenClaw Community",
+      "description": "Claude Code-style interactive development \u2014 project analysis, PR review, plan mode, pair programming"
     }
   }
 }
